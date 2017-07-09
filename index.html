@@ -1,0 +1,134 @@
+<html>
+  <title></title>
+  <head></head>
+  <body>
+    <canvas id="Canvas" width="500" height="500" style="border:1px solid #000;">
+  </body>
+  <script>
+    let canvas = document.getElementById("Canvas");
+    let ctx = canvas.getContext("2d");
+
+    setInterval(draw, 150);
+
+    document.onkeydown = checkKey;
+
+    let directionEnum = Object.freeze({down: 0, left: 1, up: 2, right: 3});
+    let direction = directionEnum.down;
+    let hitMyself = false;
+    let cellWidth = 25;
+    let colCount = 20;
+    let rowCount = 20;
+    let grid = new Array(colCount);
+    for (let index = 0; index < colCount; index++) {
+      grid[index] = new Array(rowCount);
+    }
+    let snake = [];
+    ctx.fillStyle="#777";
+    for (let index = 3; index >= 0; index--) {
+       ctx.fillRect(3 * cellWidth, index * cellWidth, cellWidth, cellWidth);
+       snake.push([3, index]);     
+    }
+
+    let food = [0,0];
+    positionFood();
+
+    function positionFood() {
+      food[0] = Math.floor((Math.random() * colCount));
+      food[1] = Math.floor((Math.random() * rowCount));
+
+      let found = false;
+      for (var index = 0; index < snake.length; index++) {
+        if ((food[0] == snake[index][0]) && (food[1] == snake[index][1])) {
+          found = true;
+          break;
+        }
+      }
+
+      if (found) {
+        positionFood();
+      }
+    }
+
+    function draw() {
+      if (!hitMyself) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let lastPos = snake[snake.length -1];
+
+        for (var index = snake.length-1; index > 0; index--) {
+          snake[index][0] = snake[index - 1][0];
+          snake[index][1] = snake[index - 1][1];
+        }
+
+        if (direction == directionEnum.down) {
+          snake[0][1] = snake[0][1] + 1;
+          if (snake[0][1] == rowCount) {
+            snake[0][1] = 0;
+          }
+        }
+        if (direction == directionEnum.up) {
+          snake[0][1] = snake[0][1] - 1;
+          if (snake[0][1] == -1) {
+            snake[0][1] = rowCount - 1;
+          }
+        }
+        if (direction == directionEnum.left) {
+          snake[0][0] = snake[0][0] - 1;
+          if (snake[0][0] == -1) {
+            snake[0][0] = colCount -1;
+          }
+        }
+        if (direction == directionEnum.right) {
+          snake[0][0] = snake[0][0] + 1;
+          if (snake[0][0] == colCount) {
+            snake[0][0] = 0;
+          }
+        }
+
+        if ((snake[0][0] == food[0]) && (snake[0][1] == food[1])) {
+          snake.push([lastPos[0], lastPos[1]]);
+          positionFood();
+        }
+        else {
+          for (var index = 1; index < snake.length; index++) {
+            if ((snake[index][0] == snake[0][0]) && (snake[index][1] == snake[0][1])) {
+              hitMyself = true;
+              break;
+            }
+          }
+        }
+
+        ctx.fillStyle = "#777";
+        for (var index = 0; index < snake.length; index++) {
+          ctx.fillRect(snake[index][0] * cellWidth, snake[index][1] * cellWidth, cellWidth, cellWidth);          
+        }
+
+        ctx.fillStyle = "red";
+        ctx.fillRect(food[0] * cellWidth, food[1] * cellWidth, cellWidth, cellWidth);
+      }
+    }
+
+    function checkKey(e) {
+      e = e || window.event;
+      if (e.keyCode == '38') {
+        if (direction != directionEnum.down) {
+          direction = directionEnum.up;
+        }
+      }
+      else if (e.keyCode == '40') {
+        if (direction != directionEnum.up) {
+          direction = directionEnum.down;
+        }
+      }
+      else if (e.keyCode == '37') {
+        if (direction != directionEnum.right) {
+          direction = directionEnum.left;
+        }
+      }
+      else if (e.keyCode == '39') {
+        if (direction != directionEnum.left) {
+          direction = directionEnum.right
+        }
+      }
+    }
+  </script>
+</html>
