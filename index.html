@@ -8,7 +8,7 @@
     let canvas = document.getElementById("Canvas");
     let ctx = canvas.getContext("2d");
 
-    setInterval(draw, 150);
+    setInterval(draw, 1500);
 
     document.onkeydown = checkKey;
 
@@ -99,7 +99,14 @@
 
         ctx.fillStyle = "#777";
         for (var index = 0; index < snake.length; index++) {
-          ctx.fillRect(snake[index][0] * cellWidth, snake[index][1] * cellWidth, cellWidth, cellWidth);          
+          let image = middleImage;
+          if (index == 0) {
+            image = headImage;
+          }
+          if (index == snake.length -1) {
+            image = endImage;
+          }
+          ctx.drawImage(image, snake[index][0] * cellWidth, snake[index][1] * cellWidth, cellWidth, cellWidth);         
         }
 
         ctx.fillStyle = "red";
@@ -130,5 +137,15 @@
         }
       }
     }
+
+  var headImage = new Image();
+  var middleImage = new Image();
+  var endImage = new Image();
+
+  window.onload = function() {
+    headImage.src = "head.png";
+    middleImage.src = "middle.png";
+    endImage.src = "end.png";
+};
   </script>
 </html>
